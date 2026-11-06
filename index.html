@@ -302,12 +302,15 @@ td.voltage-cell { font-weight:700; font-size:17px; color:var(--teal); font-varia
       // 도선의 전자
       for (let i = 0; i < 5; i++) parts.push(`<g><circle r="8" fill="${E}" stroke="#b38600"/><text y="3" text-anchor="middle" font-size="8" font-weight="700" fill="#4a3a00">e⁻</text><animateMotion path="${wire}" dur="5s" begin="${-i}s" repeatCount="indefinite"/></g>`);
       // 염다리 이온
-      const lr = 'M 244 250 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 250';
-      const rl = 'M 466 250 V 166 Q 466 143 439 143 H 271 Q 244 143 244 166 V 250';
+      // 염다리 이온: 염다리 안의 KNO₃ 이온이 이동해 각 용액으로 들어감 (비커의 이온이 건너가지 않음)
+      const lr = 'M 244 205 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 292';
+      const rl = 'M 466 205 V 166 Q 466 143 439 143 H 271 Q 244 143 244 166 V 292';
       const toCathode = leftNegative ? lr : rl, toAnode = leftNegative ? rl : lr;
+      const fade = (d, b) => `<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.86;1" dur="${d}s" begin="${b}s" repeatCount="indefinite"/>`;
       for (let i = 0; i < 3; i++) {
-        parts.push(`<g><circle r="9" fill="#f4effa" stroke="${KC}"/><text y="3" text-anchor="middle" font-size="8" font-weight="700" fill="${KC}">K⁺</text><animateMotion path="${toCathode}" dur="7.5s" begin="${-i * 2.5}s" repeatCount="indefinite"/></g>`);
-        parts.push(`<g><circle r="10" fill="#fdf2e7" stroke="${NC}"/><text y="3" text-anchor="middle" font-size="7" font-weight="700" fill="${NC}">NO₃⁻</text><animateMotion path="${toAnode}" dur="7.5s" begin="${-i * 2.5 - 1.25}s" repeatCount="indefinite"/></g>`);
+        const bk = -i * 2.5, bn = -i * 2.5 - 1.25;
+        parts.push(`<g opacity="0"><circle r="9" fill="#f4effa" stroke="${KC}"/><text y="3" text-anchor="middle" font-size="8" font-weight="700" fill="${KC}">K⁺</text><animateMotion path="${toCathode}" dur="7.5s" begin="${bk}s" repeatCount="indefinite"/>${fade(7.5, bk)}</g>`);
+        parts.push(`<g opacity="0"><circle r="10" fill="#fdf2e7" stroke="${NC}"/><text y="3" text-anchor="middle" font-size="7" font-weight="700" fill="${NC}">NO₃⁻</text><animateMotion path="${toAnode}" dur="7.5s" begin="${bn}s" repeatCount="indefinite"/>${fade(7.5, bn)}</g>`);
       }
       motion = parts.join('');
     }
@@ -326,7 +329,7 @@ td.voltage-cell { font-weight:700; font-size:17px; color:var(--teal); font-varia
       <text x="160" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${roleColor(true)}">${leftRole}</text>
       <text x="550" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${roleColor(false)}">${rightRole}</text>
       <path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#c5d8d1" stroke-width="24" stroke-linecap="round"/><path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#eff7f1" stroke-width="15" stroke-linecap="round"/>
-      <text x="355" y="129" text-anchor="middle" font-size="11" fill="#536d69">염다리 · KNO₃(aq)</text>
+      <text x="355" y="129" text-anchor="middle" font-size="11" fill="#536d69">염다리 · KNO₃(aq)</text>${[[244,250],[244,222],[244,194],[252,156],[290,143],[330,143],[370,143],[410,143],[458,156],[466,194],[466,222],[466,250]].map(([x,y],i)=>`<circle cx="${x + (i%2?2.5:-2.5)}" cy="${y}" r="3" fill="${i%2?'#d07a2c':'#7b5ea7'}" opacity=".35"/>`).join('')}
       ${active ? `<text x="355" y="182" text-anchor="middle" font-size="11" fill="${KC}" font-weight="700">K⁺ → (+)극 쪽 용액</text><text x="355" y="200" text-anchor="middle" font-size="11" fill="${NC}" font-weight="700">NO₃⁻ → (−)극 쪽 용액</text><text x="355" y="218" text-anchor="middle" font-size="9" fill="#71858e">두 용액의 전하 균형 유지</text>` : `<text x="355" y="190" text-anchor="middle" font-size="11" fill="#8a9ea8">이온의 이동 · 전하 균형</text>`}
       <path d="M 77 216 H 277 V 302 Q 277 325 254 325 H 100 Q 77 325 77 302 Z" fill="${METALS[c.leftSolution].solution}" opacity=".92"/>
       <path d="M 433 216 H 633 V 302 Q 633 325 610 325 H 456 Q 433 325 433 302 Z" fill="${METALS[c.rightSolution].solution}" opacity=".92"/>
