@@ -1,0 +1,378 @@
+<!doctype html>
+<!--
+GitHub Pages 업로드용 단일 파일입니다. 파일 이름을 index.html로 유지하세요.
+CSS, JavaScript, 학생 안내 활동지 HTML을 이 파일에 포함합니다.
+교재 수치: Zn²⁺/Zn −0.76 V, Fe²⁺/Fe −0.45 V, Cu²⁺/Cu +0.34 V.
+표시 전압은 25 ℃, 각 용액 1.0 M에서의 표준 전지 전위(이론값)입니다.
+개별 퀴즈 문항과 교재 PDF 원문·그림은 포함하지 않습니다.
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="금속 전극의 조합을 바꾸며 화학 전지의 전압과 산화·환원 반응을 탐구하는 수업용 시뮬레이션">
+  <title>화학 전지의 전압 변화와 산화·환원 반응 탐구하기</title>
+  <style>
+:root { color-scheme: light; --ink:#172e3b; --muted:#536773; --line:#d7e2e5; --paper:#fff; --background:#f3f6f5; --teal:#126b64; --teal-light:#e8f4ef; --copper:#a9623b; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--background); color:var(--ink); font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; font-size:15px; line-height:1.65; }
+button, select { font:inherit; }
+button, summary, select { -webkit-tap-highlight-color:transparent; }
+button, select, summary, a { touch-action:manipulation; }
+button { cursor:pointer; }
+button:disabled { cursor:default; opacity:.44; }
+button:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible { outline:3px solid #d19a44; outline-offset:4px; }
+a { color:inherit; }
+.skip-link { position:absolute; top:-90px; left:16px; padding:10px; background:var(--ink); color:white; z-index:20; }
+.skip-link:focus { top:8px; }
+.site-header { max-width:1280px; margin:auto; min-height:78px; padding:18px 36px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); gap:20px; }
+.brand { display:flex; align-items:center; gap:12px; font-size:13px; font-weight:700; letter-spacing:-.02em; }
+.brand-mark { display:grid; place-items:center; width:37px; height:37px; border:1px solid var(--ink); border-radius:50%; font-family:Georgia,serif; font-size:22px; font-style:italic; font-weight:normal; }
+.brand-separator { color:#99aaa9; padding:0 7px; }
+.worksheet-link { text-decoration:none; font-size:13px; white-space:nowrap; }
+.worksheet-link span { margin-left:7px; }
+main { max-width:1280px; margin:auto; padding:0 36px; }
+.intro { padding:42px 0 32px; }
+.eyebrow, .section-kicker { color:var(--teal); font-size:12px; font-weight:700; letter-spacing:.08em; margin:0 0 11px; }
+h1 { font-size:clamp(25px,3.4vw,40px); font-weight:750; letter-spacing:-.055em; line-height:1.35; margin:0 0 14px; word-break:keep-all; }
+.intro-copy { color:var(--muted); margin:0; }
+.steps { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:24px; font-size:13px; }
+.steps b { margin-right:6px; font-size:11px; color:var(--teal); }
+.steps>span:nth-child(even) { color:#8da4a6; }
+.panel { border:1px solid var(--line); border-radius:16px; background:var(--paper); }
+.experiment-layout { display:grid; grid-template-columns:310px minmax(0,1fr); gap:20px; scroll-margin-top:12px; }
+.setup-panel { padding:25px; }
+h2 { font-size:20px; letter-spacing:-.04em; line-height:1.4; margin:0 0 12px; }
+.section-kicker { font-size:10px; margin-bottom:6px; }
+.muted { color:var(--muted); }
+.setup-panel>.muted { font-size:12px; margin:0 0 19px; }
+fieldset { border:0; border-top:1px solid var(--line); margin:0 0 17px; padding:13px 0 0; min-width:0; }
+legend { font-size:13px; font-weight:700; padding-right:12px; }
+.side-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:7px; }
+.left-dot { background:#6e899d; }.right-dot { background:#b27c57; }
+label { display:block; font-size:11px; color:var(--muted); margin:8px 0 4px; }
+select { width:100%; border:1px solid #c8d6dc; border-radius:7px; color:var(--ink); background:#fff; min-height:40px; padding:6px 30px 6px 10px; font-size:13px; }
+.fixed-conditions { display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:14px; gap:8px; font-size:10px; }
+.fixed-conditions b { display:block; font-size:17px; line-height:1.5; }
+.small { font-size:11px; }
+.setup-panel .small { margin:7px 0 18px; }
+.primary-button { background:var(--teal); color:#fff; border:1px solid var(--teal); border-radius:8px; padding:11px 15px; display:inline-flex; align-items:center; justify-content:space-between; gap:18px; font-size:13px; font-weight:700; min-height:43px; }
+.primary-button:hover:not(:disabled) { background:#0d5954; }
+.setup-panel .primary-button { width:100%; }
+.feedback { font-size:11px; color:var(--teal); line-height:1.6; min-height:18px; margin:11px 0 0; }
+.feedback.error { color:#a33c31; font-weight:700; }
+.observation-panel { padding:25px 28px; display:flex; flex-direction:column; min-width:0; }
+.observation-heading { display:flex; gap:10px; justify-content:space-between; align-items:flex-start; }
+.observation-heading h2 { font-size:19px; margin:0; }
+.status-badge { display:inline-block; white-space:nowrap; font-size:10px; color:var(--muted); background:#f0f4f5; border-radius:20px; padding:4px 10px; margin-top:5px; }
+.status-badge.active { color:var(--teal); background:var(--teal-light); }
+.cell-diagram { margin:8px -7px 0; }
+.cell-diagram svg { display:block; width:100%; height:auto; }
+.cell-diagram svg text { font-family:"Malgun Gothic",sans-serif; }
+.meter-summary { display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding:15px 0 6px; gap:16px; }
+.meter-summary .small { color:var(--muted); }
+.meter-reading { display:flex; gap:10px; align-items:baseline; line-height:1.25; }
+.meter-reading output { font-size:49px; letter-spacing:-.06em; font-weight:650; font-variant-numeric:tabular-nums; }
+.meter-reading>span { font-size:20px; color:var(--muted); }
+.direction-summary { font-size:12px; text-align:right; color:var(--muted); }
+.direction-summary strong { color:var(--teal); font-weight:700; }
+.model-note { font-size:10px; color:var(--muted); margin:5px 0 15px; max-width:620px; }
+.result-actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:5px; }
+.text-button { padding:8px 4px; min-height:36px; border:0; background:transparent; color:var(--muted); font-size:11px; text-decoration:underline; text-underline-offset:3px; }
+.text-button:hover:not(:disabled) { color:var(--ink); }
+.secondary-button { border:1px solid #b9cbd0; border-radius:7px; background:#fff; color:var(--ink); padding:8px 12px; font-size:11px; min-height:36px; }
+details { margin-top:12px; border-top:1px solid var(--line); }
+summary { padding:12px 0 3px; font-size:12px; font-weight:700; cursor:pointer; }
+.reaction-content { padding:8px 0 4px; font-size:12px; }
+.reaction-line { margin:5px 0; overflow-wrap:anywhere; }
+.reaction-line b { display:inline-block; min-width:104px; font-size:10px; color:var(--muted); }
+.calculation { font-size:15px; color:var(--teal); font-weight:700; margin:10px 0 6px; }
+.reaction-content p { margin:6px 0; }
+.records-panel { margin-top:22px; padding:25px 28px 20px; }
+.records-heading { display:flex; justify-content:space-between; align-items:center; gap:15px; }
+.records-heading h2 { margin:0; }
+.record-count { display:inline-block; margin-left:8px; font-size:12px; font-weight:500; color:var(--teal); vertical-align:middle; }
+.record-tools { display:flex; align-items:center; gap:12px; }
+.records-panel>.muted { font-size:12px; margin:12px 0 19px; }
+.table-scroll { overflow-x:auto; position:relative; }
+table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; }
+th { padding:12px 10px; font-size:10px; font-weight:600; color:var(--muted); background:#f3f6f6; border-top:1px solid var(--line); border-bottom:1px solid var(--line); white-space:nowrap; }
+td { padding:13px 10px; border-bottom:1px solid var(--line); }
+td.voltage-cell { font-weight:700; font-size:17px; color:var(--teal); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.empty-row td { text-align:center; padding:30px 10px; color:var(--muted); font-size:12px; }
+.delete-row { border:0; color:var(--muted); background:transparent; font-size:20px; min-width:30px; min-height:35px; }
+.comparison-chart { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:21px; }
+.chart-item { min-width:0; }
+.chart-caption { display:flex; justify-content:space-between; gap:8px; font-size:11px; margin-bottom:7px; }
+.chart-caption b { color:var(--teal); }
+.bar-track { height:7px; border-radius:20px; background:#edf2f1; overflow:hidden; }
+.bar-fill { height:100%; border-radius:20px; background:var(--teal); transition:width .3s ease; }
+.reference-grid { margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.reference-grid details { margin:0; padding:17px 23px; align-self:start; }
+.reference-grid summary { padding:0; font-size:12px; }
+.reference-content { padding-top:9px; font-size:12px; color:var(--muted); }
+.reference-content p { margin:8px 0; }
+.potential-table { font-size:11px; margin:12px 0; }
+.potential-table td, .potential-table th { padding:9px 7px; }
+.site-footer { padding:25px 0 33px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:10px; color:var(--muted); }
+.sr-only { position:absolute; height:1px; width:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+.electron-dots { stroke-dasharray:.01 40; stroke-linecap:round; animation:electron-flow 2.2s linear infinite; }
+.reverse .electron-dots { animation-direction:reverse; }
+.paused .electron-dots { animation-play-state:paused; }
+@keyframes electron-flow { to { stroke-dashoffset:-40; } }
+@media(prefers-reduced-motion:reduce) { .electron-dots { animation:none; }.bar-fill { transition:none; } }
+@media(max-width:1000px) { .experiment-layout { grid-template-columns:280px minmax(0,1fr); }.setup-panel { padding:21px; }.observation-panel { padding:21px; }.observation-heading { flex-wrap:wrap; }.meter-reading output { font-size:42px; } }
+@media(max-width:760px) { .site-header { padding:15px 20px; min-height:68px; }.brand { font-size:11px; gap:8px; }.brand-mark { width:30px; height:30px; font-size:18px; }.brand-separator { padding:0 3px; }.worksheet-link { font-size:10px; }main { padding:0 18px; }.intro { padding:29px 0 24px; }.eyebrow { font-size:10px; }.intro-copy { font-size:12px; }.steps { gap:10px; font-size:11px; margin-top:19px; }.experiment-layout { grid-template-columns:1fr; gap:15px; }.setup-panel { padding:22px; }.setup-panel>.muted { font-size:12px; }fieldset { display:grid; grid-template-columns:1fr 1fr; column-gap:12px; }fieldset legend { margin-bottom:6px; }fieldset label:first-of-type { grid-column:1; grid-row:1; }fieldset label:last-of-type { grid-column:2; grid-row:1; }fieldset select:first-of-type { grid-column:1; grid-row:2; }fieldset select:last-of-type { grid-column:2; grid-row:2; }select { font-size:11px; }.fixed-conditions { justify-content:flex-start; gap:35px; }.observation-panel { padding:22px 19px; }.observation-heading h2 { font-size:17px; }.observation-heading { flex-wrap:nowrap; }.status-badge { font-size:9px; padding:3px 8px; }.meter-reading output { font-size:46px; }.meter-summary .small { font-size:9px; }.direction-summary { font-size:10px; }.records-panel { padding:22px 19px; margin-top:15px; }.records-heading { align-items:flex-start; flex-wrap:wrap; gap:10px; }.records-heading h2 { font-size:18px; }.records-panel>.muted { font-size:11px; }table { min-width:570px; }.reference-grid { grid-template-columns:1fr; gap:12px; margin-top:15px; }.reference-grid table { min-width:0; }.comparison-chart { grid-template-columns:1fr; gap:12px; }.chart-caption { margin-bottom:4px; }.site-footer { font-size:9px; }.desktop-break { display:none; } }
+@media print { body { background:white; }.site-header,.setup-panel,.result-actions,.record-tools,.reference-grid,.delete-row,.worksheet-link { display:none!important; }main { padding:0; }.intro { padding-top:0; }.experiment-layout { display:block; }.panel { break-inside:avoid; }.electron-dots { animation:none; }.site-footer { padding-bottom:0; } }
+
+</style>
+  
+  
+</head>
+<body>
+  <a class="skip-link" href="#experiment">실험으로 바로 가기</a>
+  <header class="site-header">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">e⁻</span><span>화학 반응의 세계 <span class="brand-separator">/</span> 화학 전지</span></div>
+    <a class="worksheet-link" href="#student-guide" target="_blank" rel="noopener">학생 안내 활동지 <span aria-hidden="true">↗</span></a>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">금속의 조합이 달라지면, 전압은 어떻게 달라질까?</p>
+      <h1 id="page-title">화학 전지의 전압 변화와<br class="desktop-break"> 산화·환원 반응 탐구하기</h1>
+      <p class="intro-copy">먼저 결과를 예상하세요. 두 반쪽 전지를 구성하고, 세 전극 조합의 전압을 비교해 보세요.</p>
+      <div class="steps" aria-label="활동 순서"><span><b>01</b> 전지 구성</span><span aria-hidden="true">→</span><span><b>02</b> 전압 확인</span><span aria-hidden="true">→</span><span><b>03</b> 결과 기록</span></div>
+    </section>
+    <section id="experiment" class="experiment-layout" aria-label="전지 구성과 전압 확인">
+      <form id="cell-form" class="panel setup-panel" novalidate>
+        <div class="section-kicker">01 / 구성</div>
+        <h2>두 반쪽 전지 선택</h2>
+        <p class="muted">금속판과 해당 금속 이온을 포함한 전해질을 한 쌍으로 선택하세요.</p>
+        <fieldset><legend><span class="side-dot left-dot" aria-hidden="true"></span>왼쪽 반쪽 전지</legend>
+          <label for="left-metal">금속판</label>
+          <select id="left-metal" name="leftMetal"><option value="Zn">아연판 · Zn</option><option value="Fe">철판 · Fe</option><option value="Cu">구리판 · Cu</option></select>
+          <label for="left-solution">전해질 수용액</label>
+          <select id="left-solution" name="leftSolution"><option value="Zn">ZnSO₄ 수용액</option><option value="Fe">FeSO₄ 수용액</option><option value="Cu">CuSO₄ 수용액</option></select>
+        </fieldset>
+        <fieldset><legend><span class="side-dot right-dot" aria-hidden="true"></span>오른쪽 반쪽 전지</legend>
+          <label for="right-metal">금속판</label>
+          <select id="right-metal" name="rightMetal"><option value="Zn">아연판 · Zn</option><option value="Fe">철판 · Fe</option><option value="Cu" selected>구리판 · Cu</option></select>
+          <label for="right-solution">전해질 수용액</label>
+          <select id="right-solution" name="rightSolution"><option value="Zn">ZnSO₄ 수용액</option><option value="Fe">FeSO₄ 수용액</option><option value="Cu" selected>CuSO₄ 수용액</option></select>
+        </fieldset>
+        <div class="fixed-conditions"><span>각 용액의 농도 <b>1.0 M</b></span><span>온도 <b>25 ℃</b></span></div>
+        <p class="small muted">농도와 온도는 이번 탐구의 통제 변인으로 고정합니다.</p>
+        <button id="measure-button" class="primary-button" type="submit">전지 구성하고 전압 확인 <span aria-hidden="true">→</span></button>
+        <p id="configuration-message" class="feedback" role="status" aria-live="polite">세 조합: Zn–Cu · Zn–Fe · Fe–Cu</p>
+      </form>
+      <div class="panel observation-panel">
+        <div class="observation-heading"><div><div class="section-kicker">02 / 관찰</div><h2>전지의 전압과 전자의 이동</h2></div><span id="result-status" class="status-badge">구성 대기</span></div>
+        <div id="cell-diagram" class="cell-diagram" role="img" aria-label="두 반쪽 전지와 염다리 모식도"></div>
+        <div class="meter-summary"><div><span class="small">표준 전지 전위에 해당하는 전압</span><div class="meter-reading"><output id="voltage" aria-live="polite">—</output><span>V</span></div></div><div id="direction-summary" class="direction-summary">전지를 구성하면<br>전자의 이동 방향이 표시됩니다.</div></div>
+        <p class="model-note">표준 상태의 이상적인 모형입니다. 표시값은 표준 환원 전위로 계산한 이론값이며, 실제 실험의 측정값과 차이가 날 수 있습니다.</p>
+        <div class="result-actions"><button id="record-button" class="primary-button" type="button" disabled>이 결과 기록하기 <span aria-hidden="true">＋</span></button><button id="animation-button" class="text-button" type="button" disabled aria-pressed="false">이동 표시 멈추기</button></div>
+        <div id="reaction-details-wrap" hidden>
+          <details id="reaction-details"><summary>전극 반응과 전위차 계산 살펴보기</summary><div id="reaction-content" class="reaction-content"></div></details>
+        </div>
+      </div>
+    </section>
+    <section class="panel records-panel" aria-labelledby="records-heading">
+      <div class="records-heading"><div><div class="section-kicker">03 / 기록과 비교</div><h2 id="records-heading">나의 실험 기록 <span id="record-count" class="record-count">0 / 3</span></h2></div><div class="record-tools"><button id="download-button" class="secondary-button" type="button" disabled>CSV 내려받기</button><button id="clear-button" class="text-button" type="button" disabled>기록 지우기</button></div></div>
+      <p class="muted">확인한 결과를 기록한 뒤 전극 조합을 바꾸어 비교하세요. 같은 조합은 좌우 위치를 바꾸어도 한 번만 기록합니다.</p>
+      <div class="table-scroll"><table><thead><tr><th scope="col">전극 조합</th><th scope="col">(−)극 / 산화</th><th scope="col">(+)극 / 환원</th><th scope="col">각 전해질 · 농도</th><th scope="col">전압(V)</th><th scope="col"><span class="sr-only">기록 삭제</span></th></tr></thead><tbody id="records-body"><tr class="empty-row"><td colspan="6">전압을 확인하고 ‘이 결과 기록하기’를 눌러 보세요.</td></tr></tbody></table></div>
+      <div id="comparison-chart" class="comparison-chart" aria-label="기록한 전압 비교"></div>
+      <p id="record-message" class="feedback" role="status" aria-live="polite"></p>
+      <p id="storage-message" class="small muted">기록은 이 기기의 브라우저에 저장됩니다. 제출할 자료는 활동지나 CSV 파일로 보관하세요.</p>
+    </section>
+    <section class="reference-grid" aria-label="탐구 참고 자료">
+      <details class="panel"><summary>표준 환원 전위 자료</summary><div class="reference-content"><p>교재 인쇄 94–95쪽에 제시된 값을 사용합니다.</p><table class="potential-table"><thead><tr><th scope="col">반쪽 반응</th><th scope="col">표준 환원 전위(V)</th></tr></thead><tbody><tr><td>Zn²⁺(aq) + 2e⁻ → Zn(s)</td><td>−0.76</td></tr><tr><td>Fe²⁺(aq) + 2e⁻ → Fe(s)</td><td>−0.45</td></tr><tr><td>Cu²⁺(aq) + 2e⁻ → Cu(s)</td><td>+0.34</td></tr></tbody></table><p class="small">표준 전지 전위 = 환원 전극의 표준 환원 전위 − 산화 전극의 표준 환원 전위</p></div></details>
+      <details class="panel"><summary>전지 조건을 해석할 때</summary><div class="reference-content"><p>이번 탐구에서는 전압의 크기를 중심으로 전극 조합을 비교합니다.</p><p>실용 전지에는 전압이 안정적으로 유지되는 성질, 경제성, 안전성과 환경에 미치는 영향 등도 중요합니다. 이 모형은 전지의 수명이나 에너지 효율을 계산하지 않습니다.</p><p class="small">염다리는 이온의 이동으로 두 용액의 전하 균형을 맞춥니다. 전자는 도선을 따라 (−)극에서 (+)극으로 이동합니다.</p></div></details>
+    </section>
+    <footer class="site-footer"><span>교재 인쇄 88–95쪽의 개념과 수치에 맞춘 학습용 모형</span><span>표준 상태 · 25 ℃ · 각 용액 1.0 M</span></footer>
+  </main>
+<script>
+/* 교재 인쇄 94~95쪽의 수치. Fe²⁺/Fe는 이 교재의 −0.45 V를 사용한다. */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.CellChemistry = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const METALS = Object.freeze({
+    Zn: Object.freeze({ symbol: 'Zn', name: '아연', electrolyte: 'ZnSO₄', electrolyteName: '황산 아연', ion: 'Zn²⁺', potential: -0.76, color: '#8b9da9', solution: '#e8f0f4' }),
+    Fe: Object.freeze({ symbol: 'Fe', name: '철', electrolyte: 'FeSO₄', electrolyteName: '황산 철(Ⅱ)', ion: 'Fe²⁺', potential: -0.45, color: '#667786', solution: '#e0eadb' }),
+    Cu: Object.freeze({ symbol: 'Cu', name: '구리', electrolyte: 'CuSO₄', electrolyteName: '황산 구리(Ⅱ)', ion: 'Cu²⁺', potential: 0.34, color: '#ba7954', solution: '#c8e8f6' })
+  });
+  const PAIRS = Object.freeze([['Zn', 'Cu'], ['Zn', 'Fe'], ['Fe', 'Cu']].map(Object.freeze));
+  function signed(value) { return (value < 0 ? '−' : '+') + Math.abs(value).toFixed(2); }
+  function keyFor(a, b) {
+    const pair = PAIRS.find(p => p.includes(a) && p.includes(b) && a !== b);
+    if (!pair) throw new Error('서로 다른 두 금속판을 선택하세요.');
+    return pair.join('–');
+  }
+  function evaluate(config) {
+    const { leftMetal, rightMetal, leftSolution, rightSolution } = config;
+    if (!Object.hasOwn(METALS, leftMetal) || !Object.hasOwn(METALS, rightMetal)) throw new Error('금속판을 선택하세요.');
+    if (leftMetal === rightMetal) throw new Error('이번 비교 실험에서는 서로 다른 두 금속판을 선택하세요.');
+    if (leftSolution !== leftMetal || rightSolution !== rightMetal)
+      throw new Error('각 금속판과 같은 금속 이온이 들어 있는 전해질을 한 쌍으로 선택하세요. 예: Zn판과 ZnSO₄ 수용액');
+    const left = METALS[leftMetal], right = METALS[rightMetal];
+    const anodeSide = left.potential < right.potential ? 'left' : 'right';
+    const anode = anodeSide === 'left' ? left : right;
+    const cathode = anodeSide === 'left' ? right : left;
+    return Object.freeze({
+      key: keyFor(leftMetal, rightMetal), left, right, anode, cathode, anodeSide,
+      cathodeSide: anodeSide === 'left' ? 'right' : 'left',
+      voltage: Number((cathode.potential - anode.potential).toFixed(2)),
+      oxidation: `${anode.symbol}(s) → ${anode.ion}(aq) + 2e⁻`,
+      reduction: `${cathode.ion}(aq) + 2e⁻ → ${cathode.symbol}(s)`,
+      overall: `${anode.symbol}(s) + ${cathode.ion}(aq) → ${anode.ion}(aq) + ${cathode.symbol}(s)`,
+      calculation: `${signed(cathode.potential)} − (${signed(anode.potential)}) = ${(cathode.potential - anode.potential).toFixed(2)} V`,
+      electronDirection: `${anode.symbol}판 → ${cathode.symbol}판`,
+      concentration: 1, temperature: 25
+    });
+  }
+  return Object.freeze({ METALS, PAIRS, evaluate, keyFor, signed });
+});
+
+(function () {
+  'use strict';
+  const { METALS, PAIRS, evaluate } = window.CellChemistry;
+  const $ = id => document.getElementById(id);
+  const form = $('cell-form');
+  const fields = ['left-metal', 'left-solution', 'right-metal', 'right-solution'];
+  const storageKey = 'chemical-cell-standard-v1';
+  let result = null, records = [], paused = false, storageAvailable = true, clearArmed = false;
+  function config() {
+    return { leftMetal: $('left-metal').value, leftSolution: $('left-solution').value, rightMetal: $('right-metal').value, rightSolution: $('right-solution').value };
+  }
+  function persist() {
+    try { localStorage.setItem(storageKey, JSON.stringify(records.map(r => ({ leftMetal: r.left.symbol, rightMetal: r.right.symbol, leftSolution: r.left.symbol, rightSolution: r.right.symbol })))); }
+    catch (_) { storageAvailable = false; }
+    if (!storageAvailable) $('storage-message').textContent = '브라우저 저장을 사용할 수 없습니다. 현재 기록을 활동지에 옮기거나 CSV로 내려받으세요.';
+  }
+  function restore() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      const saved = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(saved)) return;
+      for (const item of saved.slice(0, 3)) {
+        try { const row = evaluate(item); if (!records.some(r => r.key === row.key)) records.push(row); } catch (_) { /* 호환되지 않는 기록은 사용하지 않는다. */ }
+      }
+    } catch (_) { storageAvailable = false; }
+  }
+  function feedback(message, error = false) {
+    $('configuration-message').textContent = message;
+    $('configuration-message').classList.toggle('error', error);
+  }
+  function diagram() {
+    const c = config(), left = METALS[c.leftMetal], right = METALS[c.rightMetal];
+    const active = Boolean(result), leftNegative = active && result.anodeSide === 'left';
+    const leftRole = active ? (leftNegative ? '(−)극 · 산화' : '(+)극 · 환원') : '왼쪽 반쪽 전지';
+    const rightRole = active ? (leftNegative ? '(+)극 · 환원' : '(−)극 · 산화') : '오른쪽 반쪽 전지';
+    const flowText = active ? `전자 이동: ${result.electronDirection}` : '도선';
+    const leftIon = active ? (leftNegative ? 'NO₃⁻ ←' : 'K⁺ ←') : '이온의 이동';
+    const rightIon = active ? (leftNegative ? '→ K⁺' : '→ NO₃⁻') : '전하 균형';
+    const activeColor = active ? '#126b64' : '#a8b9c0';
+    const bubbles = (metal, x) => [0,1,2,3,4].map((n) => `<circle cx="${x + [12,69,93,41,116][n]}" cy="${240+[0,13,49,61,22][n]}" r="12" fill="#ffffff" opacity=".8"/><text x="${x+[12,69,93,41,116][n]}" y="${244+[0,13,49,61,22][n]}" text-anchor="middle" font-size="8" fill="#506b78">${metal.ion}</text>`).join('');
+    const arrowStart = leftNegative ? '220' : '490', arrowEnd = leftNegative ? '490' : '220';
+    $('cell-diagram').innerHTML = `<svg viewBox="0 0 710 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="${active && !leftNegative ? 'reverse' : ''} ${paused ? 'paused' : ''}">
+      <defs><marker id="arrow-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${activeColor}"/></marker><linearGradient id="metal-left"><stop stop-color="${left.color}"/><stop offset=".5" stop-color="#dbe1e2"/><stop offset="1" stop-color="${left.color}"/></linearGradient><linearGradient id="metal-right"><stop stop-color="${right.color}"/><stop offset=".5" stop-color="#e7ded6"/><stop offset="1" stop-color="${right.color}"/></linearGradient></defs>
+      <text x="355" y="27" text-anchor="middle" font-size="12" fill="${activeColor}" font-weight="700">${flowText}</text>
+      <path d="M 160 159 V 66 H 550 V 159" fill="none" stroke="#8599a2" stroke-width="3"/>
+      ${active ? `<path d="M ${arrowStart} 49 H ${arrowEnd}" stroke="${activeColor}" stroke-width="2" marker-end="url(#arrow-head)"/><path class="electron-dots" d="M 160 159 V 66 H 550 V 159" fill="none" stroke="${activeColor}" stroke-width="7"/>` : ''}
+      <rect x="310" y="48" width="90" height="37" rx="8" fill="#f0f6f5" stroke="#b6c9cb"/><text x="355" y="71" text-anchor="middle" font-size="13" font-weight="700" fill="#31545c">전압계</text>
+      <text x="160" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${active ? (leftNegative ? '#547189' : '#a9623b') : '#607580'}">${leftRole}</text>
+      <text x="550" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${active ? (leftNegative ? '#a9623b' : '#547189') : '#607580'}">${rightRole}</text>
+      <path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#c5d8d1" stroke-width="22" stroke-linecap="round"/><path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#eff7f1" stroke-width="13" stroke-linecap="round"/>
+      <text x="355" y="129" text-anchor="middle" font-size="11" fill="#536d69">염다리 · KNO₃</text><text x="282" y="181" text-anchor="middle" font-size="12" fill="#126b64">${leftIon}</text><text x="429" y="181" text-anchor="middle" font-size="12" fill="#126b64">${rightIon}</text>
+      <path d="M 77 216 H 277 V 302 Q 277 325 254 325 H 100 Q 77 325 77 302 Z" fill="${METALS[c.leftSolution].solution}" opacity=".92"/>
+      <path d="M 433 216 H 633 V 302 Q 633 325 610 325 H 456 Q 433 325 433 302 Z" fill="${METALS[c.rightSolution].solution}" opacity=".92"/>
+      <path d="M 75 195 V 302 Q 75 327 100 327 H 254 Q 279 327 279 302 V 195" fill="none" stroke="#88a2af" stroke-width="2"/><path d="M 431 195 V 302 Q 431 327 456 327 H 610 Q 635 327 635 302 V 195" fill="none" stroke="#88a2af" stroke-width="2"/>
+      <path d="M 77 216 H 277 M 433 216 H 633" stroke="#a7bfcb" stroke-width="1"/>
+      ${bubbles(METALS[c.leftSolution], 104)}${bubbles(METALS[c.rightSolution], 460)}
+      <rect x="143" y="151" width="34" height="145" rx="3" fill="url(#metal-left)" stroke="#738895"/><rect x="533" y="151" width="34" height="145" rx="3" fill="url(#metal-right)" stroke="#94745e"/>
+      <text x="160" y="174" text-anchor="middle" font-size="13" fill="#243a46" font-weight="700">${left.symbol}</text><text x="550" y="174" text-anchor="middle" font-size="13" fill="#243a46" font-weight="700">${right.symbol}</text>
+      ${active ? `<text x="177" y="314" text-anchor="middle" font-size="10" fill="#38505b">${leftNegative ? '금속판의 질량 감소' : '금속 석출 · 금속판의 질량 증가'}</text><text x="533" y="314" text-anchor="middle" font-size="10" fill="#38505b">${leftNegative ? '금속 석출 · 금속판의 질량 증가' : '금속판의 질량 감소'}</text>` : ''}
+      <text x="177" y="352" text-anchor="middle" font-size="13" fill="#304e60">1.0 M ${METALS[c.leftSolution].electrolyte}(aq)</text><text x="533" y="352" text-anchor="middle" font-size="13" fill="#304e60">1.0 M ${METALS[c.rightSolution].electrolyte}(aq)</text>
+      <text x="355" y="375" text-anchor="middle" font-size="9" fill="#71858e">반응과 이동 방향을 나타낸 모식도입니다. 시간에 따른 농도·질량 변화량은 계산하지 않습니다.</text>
+      </svg>`;
+    $('cell-diagram').setAttribute('aria-label', active ? `${left.symbol}판과 ${right.symbol}판을 연결한 전지. ${result.anode.symbol}판은 산화되는 (−)극, ${result.cathode.symbol}판은 환원되는 (+)극. 전자는 도선을 따라 ${result.electronDirection} 방향으로 이동. 염다리의 음이온은 (−)극 쪽, 양이온은 (+)극 쪽으로 이동.` : `${left.name}판과 ${right.name}판, 두 전해질 수용액, 염다리와 전압계로 이루어진 전지 구성 화면.`);
+  }
+  function invalidate() {
+    result = null; paused = false; $('voltage').textContent = '—';
+    $('result-status').textContent = '구성 대기'; $('result-status').classList.remove('active');
+    $('record-button').disabled = true; $('animation-button').disabled = true;
+    $('animation-button').textContent = '이동 표시 멈추기'; $('animation-button').setAttribute('aria-pressed', 'false');
+    $('direction-summary').innerHTML = '전지를 구성하면<br>전자의 이동 방향이 표시됩니다.';
+    $('reaction-details-wrap').hidden = true; $('reaction-details').open = false;
+    feedback('조건을 확인한 뒤 전압 확인 버튼을 누르세요.'); diagram();
+  }
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    try {
+      result = evaluate(config()); paused = false;
+      $('voltage').textContent = result.voltage.toFixed(2);
+      $('result-status').textContent = result.key + ' 전지'; $('result-status').classList.add('active');
+      $('record-button').disabled = false; $('animation-button').disabled = false;
+      $('animation-button').textContent = '이동 표시 멈추기'; $('animation-button').setAttribute('aria-pressed', 'false');
+      $('direction-summary').innerHTML = `전자 이동<br><strong>${result.electronDirection}</strong><br><span>(−)극 → (+)극</span>`;
+      $('reaction-details-wrap').hidden = false;
+      $('reaction-content').innerHTML = `<p class="reaction-line"><b>(−)극 · 산화</b>${result.oxidation}</p><p class="reaction-line"><b>(+)극 · 환원</b>${result.reduction}</p><p class="reaction-line"><b>전체 반응</b>${result.overall}</p><p class="small">${result.anode.symbol}의 산화수: 0 → +2 / ${result.cathode.symbol}의 산화수: +2 → 0</p><p class="small">E°전지 = E°환원 전극 − E°산화 전극</p><p class="calculation">${result.calculation}</p><p class="small">전자를 얻는 것은 (+)극 표면의 ${result.cathode.ion}입니다. 전자는 도선으로, 이온은 용액과 염다리로 이동합니다.</p>`;
+      feedback('전압을 확인했습니다. 결과를 기록하고 다음 조합과 비교하세요.'); diagram();
+    } catch (error) { invalidate(); feedback(error.message, true); }
+  });
+  fields.forEach(id => $(id).addEventListener('change', invalidate));
+  $('animation-button').addEventListener('click', () => {
+    if (!result) return;
+    paused = !paused; $('animation-button').setAttribute('aria-pressed', String(paused));
+    $('animation-button').textContent = paused ? '이동 표시 재생하기' : '이동 표시 멈추기'; diagram();
+  });
+  function renderRecords() {
+    records.sort((a,b) => PAIRS.findIndex(p => p.join('–') === a.key) - PAIRS.findIndex(p => p.join('–') === b.key));
+    $('record-count').textContent = `${records.length} / 3`;
+    $('download-button').disabled = records.length === 0; $('clear-button').disabled = records.length === 0;
+    $('records-body').innerHTML = records.length ? records.map(r => `<tr><td><strong>${r.key}</strong></td><td>${r.anode.symbol}판</td><td>${r.cathode.symbol}판</td><td>${r.anode.electrolyte} / ${r.cathode.electrolyte}<br><span class="small muted">각각 1.0 M · 25 ℃</span></td><td class="voltage-cell">${r.voltage.toFixed(2)}</td><td><button class="delete-row" type="button" data-key="${r.key}" aria-label="${r.key} 기록 삭제">×</button></td></tr>`).join('') : '<tr class="empty-row"><td colspan="6">전압을 확인하고 ‘이 결과 기록하기’를 눌러 보세요.</td></tr>';
+    $('comparison-chart').innerHTML = records.map(r => `<div class="chart-item"><div class="chart-caption"><span>${r.key}</span><b>${r.voltage.toFixed(2)} V</b></div><div class="bar-track" role="img" aria-label="${r.key} 전압 ${r.voltage.toFixed(2)} V"><div class="bar-fill" style="width:${(r.voltage/1.2*100).toFixed(2)}%"></div></div></div>`).join('');
+    persist();
+  }
+  $('record-button').addEventListener('click', () => {
+    if (!result) return;
+    if (records.some(r => r.key === result.key)) { $('record-message').textContent = `${result.key} 조합은 이미 기록했습니다. 다른 조합을 선택하세요.`; return; }
+    records.push(result); renderRecords();
+    $('record-message').textContent = records.length === 3 ? '세 조합을 모두 기록했습니다. 전압을 비교하고 활동지에 자신의 해석을 작성하세요.' : `${result.key} 조합을 기록했습니다.`;
+    clearArmed = false; $('clear-button').textContent = '기록 지우기';
+  });
+  $('records-body').addEventListener('click', event => {
+    const button = event.target.closest('button[data-key]'); if (!button) return;
+    records = records.filter(r => r.key !== button.dataset.key); renderRecords();
+    $('record-message').textContent = `${button.dataset.key} 기록을 삭제했습니다.`;
+    clearArmed = false; $('clear-button').textContent = '기록 지우기';
+  });
+  $('clear-button').addEventListener('click', () => {
+    if (!clearArmed) { clearArmed = true; $('clear-button').textContent = '한 번 더 눌러 전체 삭제'; return; }
+    records = []; clearArmed = false; $('clear-button').textContent = '기록 지우기'; renderRecords(); $('record-message').textContent = '기록을 지웠습니다.';
+  });
+  $('download-button').addEventListener('click', () => {
+    const lines = [['전극 조합','산화 전극(−)','환원 전극(+)','산화 쪽 전해질','환원 쪽 전해질','각 용액의 농도(M)','온도(℃)','전압(V)','값의 의미']];
+    records.forEach(r => lines.push([r.key,r.anode.symbol,r.cathode.symbol,r.anode.electrolyte,r.cathode.electrolyte,'1.0','25',r.voltage.toFixed(2),'표준 상태의 이상 모형에서 계산한 이론값']));
+    const content = '\uFEFF' + lines.map(row => row.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([content], {type:'text/csv;charset=utf-8;'}));
+    const a = document.createElement('a'); a.href=url; a.download='화학전지_전압기록.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  restore(); renderRecords(); diagram();
+})();
+
+
+(function(){
+  const guideSource = "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>화학 전지의 전압 변화와 산화·환원 반응 탐구하기 학생 안내 활동지</title><style>@font-face{font-family:GuideDotum;src:local(\"함초롬돋움\"),local(\"HCR Dotum\")}*{box-sizing:border-box}body{margin:0;background:#e9ecef;color:#000;font-family:GuideDotum,\"Malgun Gothic\",sans-serif;font-size:10.5pt;line-height:1.6}.sheet{width:8.5in;min-height:11in;margin:22px auto;padding:34pt 45pt 32pt;background:white;position:relative}h1{font-size:16pt;line-height:1.45;margin:0 0 3pt;font-weight:700}h2{font-size:12pt;line-height:1.6;margin:9pt 0 6pt}p{margin:0 0 4pt}.b{font-weight:700;margin-top:7pt}.subtitle{font-size:9pt;margin-bottom:12pt}.small{font-size:9pt;line-height:1.6}table{width:100%;border-collapse:collapse;margin:6pt 0;font-size:10pt;table-layout:fixed}th,td{border:.5pt solid #888;padding:5pt 7pt;vertical-align:middle;overflow-wrap:anywhere}th{background:#ededed;text-align:center}td:empty{height:25pt}sub,super{font-size:.75em}super{vertical-align:super}.answer-lines{margin-bottom:7pt}.answer-lines div{height:19pt;border-bottom:.35pt solid #b5b5b5}footer{position:absolute;bottom:12pt;right:45pt;font-size:8pt}.toolbar{position:sticky;top:0;background:#172e3b;color:white;padding:10px;text-align:center;z-index:9;font-family:system-ui,sans-serif;font-size:13px}.toolbar button{margin-left:15px;padding:6px 12px}body[contenteditable=\"true\"] .sheet{outline:1px dashed #999}@page{size:Letter;margin:0}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page;min-height:11in}.sheet:last-child{break-after:auto}}@media screen and (max-width:840px){.sheet{margin:12px auto;width:100%;min-height:0;padding:25px}footer{position:static;text-align:right;margin-top:15px}}</style></head><body><div class=\"toolbar\">학생 안내 활동지 · HTML 편집 원문 <button type=\"button\" onclick=\"document.querySelectorAll('.sheet').forEach(s=>s.contentEditable='true');this.textContent='본문을 눌러 수정하세요'\">본문 편집</button><button type=\"button\" onclick=\"saveEditedGuide()\">수정한 HTML 저장</button><button type=\"button\" onclick=\"window.print()\">인쇄</button></div><section class=\"sheet\"><h1 class=\"title\">화학 전지의 전압 변화와 산화·환원 반응 탐구하기</h1><p class=\"subtitle\">학생 안내 활동지  |  수행평가</p><p class=\"body\">학번: __________________    이름: __________________</p><h2 class=\"h\">활동 순서</h2><p class=\"body\">탐구 조건 확인 → 예상과 근거 작성 → 시뮬레이션 실행과 전압 기록 → 결과 분석 → 자유주제 탐구보고서 작성 → 제출</p><h2 class=\"h\">1. 탐구 조건 확인과 예상</h2><p class=\"body\">교사가 제공한 시뮬레이션에서 금속 전극의 조합에 따른 전압을 비교합니다.</p><table><colgroup><col style=\"width:28.999999999999996%\"><col style=\"width:71.0%\"></colgroup><tr><th>구분</th><th>탐구 조건</th></tr><tr><td>바꿀 조건〔조작 변인〕</td><td>금속 전극의 조합: Zn–Cu, Zn–Fe, Fe–Cu</td></tr><tr><td>유지할 조건〔통제 변인〕</td><td>각 금속 이온 수용액의 농도 1.0 M, 온도 25 ℃</td></tr><tr><td>확인할 결과〔종속 변인〕</td><td>각 전지의 전압(V)</td></tr></table><p class=\"body\">금속판과 해당 금속 이온을 포함한 용액을 한 쌍으로 선택합니다.</p><p class=\"body\">Zn판–ZnSO<sub>4</sub> 수용액 / Fe판–FeSO<sub>4</sub> 수용액 / Cu판–CuSO<sub>4</sub> 수용액</p><p class=\"b\">예상과 근거</p><p class=\"body\">세 전극 조합 중 전압이 가장 클 것으로 예상하는 조합과 그 이유를 작성하세요.</p><p class=\"body\">나는 __________________ 전지의 전압이 가장 클 것으로 예상한다.</p><p class=\"body\">그 이유는 __________________________________________________</p><p class=\"body\">________________________________________________이기 때문이다.</p><h2 class=\"h\">2. 전지 구성과 전압 기록</h2><p class=\"body\">금속판과 전해질을 선택하고 농도와 온도를 확인합니다. ‘전지 구성하고 전압 확인’을 누른 뒤 ‘이 결과 기록하기’를 누릅니다. 다른 전극 조합에서도 반복하세요.</p><table><colgroup><col style=\"width:9.0%\"><col style=\"width:20.0%\"><col style=\"width:53.0%\"><col style=\"width:18.0%\"></colgroup><tr><th>실험</th><th>금속 전극 조합</th><th>사용한 각 전해질의 종류와 농도</th><th>전압(V)</th></tr><tr><td>①</td><td>Zn–Cu</td><td></td><td></td></tr><tr><td>②</td><td>Zn–Fe</td><td></td><td></td></tr><tr><td>③</td><td>Fe–Cu</td><td></td><td></td></tr></table><p class=\"small\">시뮬레이션에서 직접 확인한 값을 기록하세요. 표시값은 표준 상태의 이론값이며, 실제 실험의 측정값과 차이가 날 수 있습니다.</p><footer>1 / 4</footer></section><section class=\"sheet\"><h2 class=\"h\">3. 기본 질문 답변</h2><p class=\"b\">1번. 산화·환원 개념 이해</p><p class=\"body\">이 항목은 수업 시간에 실시한 산화·환원 관련 퀴즈로 평가합니다.</p><p class=\"b\">2번. 전압 비교와 원인 해석</p><p class=\"body\">① 세 전지의 전압을 큰 순서대로 정리하고, 처음 예상과 비교하세요.</p><div class=\"answer-lines\"><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div></div><p class=\"body\">② 실험한 전지 중 하나를 선택하여 표준 전지 전위를 계산하세요. 계산 과정도 작성하세요.</p><p class=\"body\">선택한 전지: __________________</p><p class=\"small\">표준 전지 전위 = 환원 전극의 표준 환원 전위 − 산화 전극의 표준 환원 전위</p><div class=\"answer-lines\"><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div></div><p class=\"body\">③ 전극 조합에 따라 전압이 달라지는 이유를 전극 반응, 전자의 이동, 표준 환원 전위를 활용하여 설명하세요.</p><div class=\"answer-lines\"><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div></div><p class=\"b\">3번. 효율적인 화학 전지의 조건</p><p class=\"body\">이번 탐구에서는 전압의 크기를 기준으로 전극 조합을 비교합니다. 어떤 전극 조합이 유리하다고 판단했나요? 기록한 전압 데이터를 근거로 설명하세요.</p><div class=\"answer-lines\"><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div></div><p class=\"small\">실용 전지에는 전압의 안정적 유지, 경제성, 안전성과 환경에 미치는 영향 등도 중요합니다. 이 시뮬레이션에서는 수명이나 에너지 효율을 계산하지 않습니다.</p><footer>2 / 4</footer></section><section class=\"sheet\"><h2 class=\"h\">4. 자유주제 탐구보고서 작성</h2><p class=\"body\">산화·환원 또는 화학 전지와 관련된 자유주제를 정하여 탐구보고서를 작성하세요. 수업이나 시뮬레이션에서 생긴 궁금증을 발전시켜도 좋습니다.</p><p class=\"b\">주제 예시</p><p class=\"body\">철의 부식과 부식 방지 / 비타민 C의 항산화 작용 / 금속 도금 / 리튬 이온 전지의 충전과 방전 / 폐전지에서 금속을 회수하는 원리</p><p class=\"b\">보고서에 포함할 내용</p><p class=\"body\">① 탐구 주제와 선정 이유   ② 핵심 탐구 질문   ③ 관련 과학 개념과 원리</p><p class=\"body\">④ 조사 내용과 본인의 분석   ⑤ 결론과 자기 성찰   ⑥ 참고 자료</p><p class=\"body\">알아보고 싶은 질문을 정하고, 자료를 근거로 자신의 해석과 결론을 제시하세요. 인용한 글·그림·자료의 출처를 표시합니다.</p><p class=\"body\">탐구보고서 제목: ____________________________________________</p><p class=\"body\">핵심 탐구 질문: ____________________________________________</p><p class=\"b\">탐구보고서</p><div class=\"answer-lines\"><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div></div><p class=\"small\">필요하면 별지 또는 별도 파일로 이어서 작성하고 함께 제출하세요.</p><footer>3 / 4</footer></section><section class=\"sheet\"><h2 class=\"h\">5. AI 활용 내역</h2><p class=\"body\">사용했다면 아래 내용을 작성하고, 사용하지 않았다면 ‘사용하지 않음’으로 표시하세요.</p><table><colgroup><col style=\"width:33.0%\"><col style=\"width:67.0%\"></colgroup><tr><th>기록 항목</th><th>내용</th></tr><tr><td>① 사용한 AI 도구</td><td></td></tr><tr><td>② 사용 목적</td><td></td></tr><tr><td>③ 사용한 프롬프트</td><td></td></tr><tr><td>④ AI의 주요 결과와 활용한 내용</td><td></td></tr><tr><td>⑤ 내가 직접 확인·수정·판단한 부분</td><td></td></tr><tr><td>⑥ 활동을 통해 배운 점</td><td></td></tr></table><p class=\"b\">AI 사용 안내</p><p class=\"body\">• 기초 개념 조사, 변인 설정과 실험 조건 비교, 주제 탐색, 보고서 구성 및 전압 해석 방향에 대한 피드백에 사용할 수 있습니다.</p><p class=\"body\">• AI가 작성한 내용을 그대로 또는 일부만 수정하여 자신의 결과물로 제출할 수 없습니다. 답변과 보고서는 자신의 이해와 표현으로 작성합니다.</p><p class=\"body\">• 모둠 토의와 브리핑에서 AI의 답변으로 자신의 의견을 대신할 수 없습니다.</p><p class=\"body\">• 도구·목적·프롬프트·결과를 기록하고, 최종 결과물에서 AI의 도움과 본인의 사고·판단을 구분합니다.</p><h2 class=\"h\">평가 안내</h2><p class=\"small\">아래는 평가 내용의 요약입니다. 배점과 점수별 채점 기준은 기존 평가계획을 그대로 적용합니다.</p><table><colgroup><col style=\"width:31.0%\"><col style=\"width:9.0%\"><col style=\"width:60.0%\"></colgroup><tr><th>평가요소</th><th>배점</th><th>평가 근거</th></tr><tr><td>산화·환원 개념 이해</td><td>20점</td><td>수업 시간에 실시한 산화·환원 관련 퀴즈</td></tr><tr><td>전지 구성과 측정</td><td>20점</td><td>전극·전해질·농도·온도 설정과 전압 기록</td></tr><tr><td>전압 분석과 해석</td><td>30점</td><td>2번 답변: 전압 비교, 전위차 계산과 원인 설명</td></tr><tr><td>탐구보고서와 AI 활용</td><td>30점</td><td>3번의 데이터에 근거한 판단, 자유주제 조사·분석, AI 기록과 본인의 사고·성찰</td></tr></table><p class=\"b\">최종 제출 내용</p><p class=\"body\">예상과 근거 / 전압 기록표 / 기본 질문 2~3번 답변 / 자유주제 탐구보고서와 참고 자료 / AI 활용 내역</p><p class=\"small\">백지 제출, 자발적 미응시자, 장기 결석자 등의 학생에 대한 기본 점수는 기존 평가계획에 따라 36점입니다.</p><footer>4 / 4</footer></section><script>function saveEditedGuide(){const copy=document.documentElement.cloneNode(true);copy.querySelectorAll('.sheet').forEach(s=>s.removeAttribute('contenteditable'));const u=URL.createObjectURL(new Blob(['<!doctype html>'+copy.outerHTML],{type:'text/html;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='학생_안내_활동지_수정본.html';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}<\/script></body></html>";
+  document.querySelector('.worksheet-link').addEventListener('click', function(event){
+    event.preventDefault();
+    const url=URL.createObjectURL(new Blob([guideSource],{type:'text/html;charset=utf-8'}));
+    window.open(url,'_blank','noopener');
+    setTimeout(function(){ URL.revokeObjectURL(url); },60000);
+  });
+})();
+
+</script>
+</body>
+</html>
