@@ -267,36 +267,87 @@ td.voltage-cell { font-weight:700; font-size:17px; color:var(--teal); font-varia
   function diagram() {
     const c = config(), left = METALS[c.leftMetal], right = METALS[c.rightMetal];
     const active = Boolean(result), leftNegative = active && result.anodeSide === 'left';
+    const OX = '#c0533a', RED = '#2f6fa3', E = '#f2b705', KC = '#7b5ea7', NC = '#d07a2c';
     const leftRole = active ? (leftNegative ? '(−)극 · 산화' : '(+)극 · 환원') : '왼쪽 반쪽 전지';
     const rightRole = active ? (leftNegative ? '(+)극 · 환원' : '(−)극 · 산화') : '오른쪽 반쪽 전지';
     const flowText = active ? `전자 이동: ${result.electronDirection}` : '도선';
-    const leftIon = active ? (leftNegative ? 'NO₃⁻ ←' : 'K⁺ ←') : '이온의 이동';
-    const rightIon = active ? (leftNegative ? '→ K⁺' : '→ NO₃⁻') : '전하 균형';
     const activeColor = active ? '#126b64' : '#a8b9c0';
-    const bubbles = (metal, x) => [0,1,2,3,4].map((n) => `<circle cx="${x + [12,69,93,41,116][n]}" cy="${240+[0,13,49,61,22][n]}" r="12" fill="#ffffff" opacity=".8"/><text x="${x+[12,69,93,41,116][n]}" y="${244+[0,13,49,61,22][n]}" text-anchor="middle" font-size="8" fill="#506b78">${metal.ion}</text>`).join('');
-    const arrowStart = leftNegative ? '220' : '490', arrowEnd = leftNegative ? '490' : '220';
-    $('cell-diagram').innerHTML = `<svg viewBox="0 0 710 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="${active && !leftNegative ? 'reverse' : ''} ${paused ? 'paused' : ''}">
+    const ionDot = (x, y, label, stroke, r = 12, fs = 8) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#ffffff" stroke="${stroke}" stroke-width="1.2" opacity=".92"/><text x="${x}" y="${y + 3}" text-anchor="middle" font-size="${fs}" fill="#334d59">${label}</text>`;
+    const bubbles = (metal, x) => [0,1,2,3].map(n => ionDot(x + [10,70,96,38][n], 244 + [0,13,46,62][n], metal.ion, '#9fb6c1')).join('')
+      + [0,1].map(n => `<text x="${x + [58,112][n]}" y="${[300,262][n]}" text-anchor="middle" font-size="8" fill="#8a9ea8">SO₄²⁻</text>`).join('');
+    let motion = '';
+    if (active) {
+      const A = leftNegative ? 160 : 550, C = leftNegative ? 550 : 160;
+      const an = result.anode, ca = result.cathode;
+      const anodeSol = leftNegative ? METALS[c.leftSolution].solution : METALS[c.rightSolution].solution;
+      const wire = `M ${A} 151 V 66 H ${C} V 151`;
+      const parts = [];
+      // 산화 전극: 금속판이 깎이는 자국
+      [-1, 1].forEach(s => { for (let k = 0; k < 7; k++) parts.push(`<circle cx="${A + s * 16}" cy="${230 + k * 9}" r="4" fill="${anodeSol}" opacity="0"><set attributeName="opacity" to="1" begin="${(1 + k * 1.3 + (s > 0 ? .6 : 0)).toFixed(1)}s" fill="freeze"/></circle>`); });
+      // 산화 전극: 금속 이온이 판에서 녹아 나옴
+      for (let i = 0; i < 4; i++) {
+        const s = i % 2 ? 1 : -1, y = 236 + i * 15;
+        parts.push(`<g opacity="0">${ionDot(0, 0, an.ion, OX, 12, 8)}<animateTransform attributeName="transform" type="translate" from="${A + s * 19} ${y}" to="${A + s * 62} ${y + (s > 0 ? 10 : -8)}" dur="4s" begin="${-i}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="4s" begin="${-i}s" repeatCount="indefinite"/></g>`);
+      }
+      // 환원 전극: 용액의 금속 이온이 판으로 이동
+      for (let i = 0; i < 4; i++) {
+        const s = i % 2 ? 1 : -1, y = 238 + i * 14;
+        parts.push(`<g opacity="0">${ionDot(0, 0, ca.ion, RED, 12, 8)}<animateTransform attributeName="transform" type="translate" from="${C + s * 66} ${y + (s > 0 ? 10 : -6)}" to="${C + s * 22} ${y}" dur="4s" begin="${-i - .5}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.85;1" dur="4s" begin="${-i - .5}s" repeatCount="indefinite"/></g>`);
+      }
+      // 환원 전극: 금속 석출층이 쌓임
+      [-1, 1].forEach(s => { for (let k = 0; k < 8; k++) parts.push(`<circle cx="${C + s * 19.5}" cy="${227 + k * 9}" r="4.6" fill="${ca.color}" stroke="#5f4636" stroke-width=".6" opacity="0"><set attributeName="opacity" to="1" begin="${(1.2 + k * 1.2 + (s > 0 ? .6 : 0)).toFixed(1)}s" fill="freeze"/></circle>`); });
+      // 금속판 안의 전자
+      parts.push(`<g><circle r="5" fill="${E}"/><animateMotion path="M ${A} 290 V 188" dur="2.5s" repeatCount="indefinite"/></g>`);
+      parts.push(`<g><circle r="5" fill="${E}"/><animateMotion path="M ${C} 188 V 290" dur="2.5s" repeatCount="indefinite"/></g>`);
+      // 도선의 전자
+      for (let i = 0; i < 5; i++) parts.push(`<g><circle r="8" fill="${E}" stroke="#b38600"/><text y="3" text-anchor="middle" font-size="8" font-weight="700" fill="#4a3a00">e⁻</text><animateMotion path="${wire}" dur="5s" begin="${-i}s" repeatCount="indefinite"/></g>`);
+      // 염다리 이온
+      const lr = 'M 244 250 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 250';
+      const rl = 'M 466 250 V 166 Q 466 143 439 143 H 271 Q 244 143 244 166 V 250';
+      const toCathode = leftNegative ? lr : rl, toAnode = leftNegative ? rl : lr;
+      for (let i = 0; i < 3; i++) {
+        parts.push(`<g><circle r="9" fill="#f4effa" stroke="${KC}"/><text y="3" text-anchor="middle" font-size="8" font-weight="700" fill="${KC}">K⁺</text><animateMotion path="${toCathode}" dur="7.5s" begin="${-i * 2.5}s" repeatCount="indefinite"/></g>`);
+        parts.push(`<g><circle r="10" fill="#fdf2e7" stroke="${NC}"/><text y="3" text-anchor="middle" font-size="7" font-weight="700" fill="${NC}">NO₃⁻</text><animateMotion path="${toAnode}" dur="7.5s" begin="${-i * 2.5 - 1.25}s" repeatCount="indefinite"/></g>`);
+      }
+      motion = parts.join('');
+    }
+    const eqBox = (x, isAnode) => {
+      const m = isAnode ? result.anode : result.cathode, col = isAnode ? OX : RED;
+      return `<rect x="${x - 135}" y="362" width="270" height="48" rx="8" fill="#ffffff" stroke="${col}" stroke-width="1.3"/><text x="${x}" y="381" text-anchor="middle" font-size="11" font-weight="700" fill="${col}">${isAnode ? '(−)극 · 산화 반응 (전자를 잃음)' : '(+)극 · 환원 반응 (전자를 얻음)'}</text><text x="${x}" y="400" text-anchor="middle" font-size="12" fill="#243a46">${isAnode ? result.oxidation : result.reduction}</text>`;
+    };
+    const legend = active ? `<g font-size="9" fill="#536773"><circle cx="16" cy="20" r="6" fill="${E}" stroke="#b38600"/><text x="26" y="23">전자</text><circle cx="64" cy="20" r="6" fill="#fff" stroke="${OX}"/><text x="74" y="23">녹아 나온 이온</text><circle cx="152" cy="20" r="6" fill="#fff" stroke="${RED}"/><text x="162" y="23">환원되는 이온</text><circle cx="580" cy="20" r="6" fill="#f4effa" stroke="${KC}"/><text x="590" y="23">K⁺</text><circle cx="622" cy="20" r="6" fill="#fdf2e7" stroke="${NC}"/><text x="632" y="23">NO₃⁻</text></g>` : '';
+    const roleColor = isLeft => !active ? '#607580' : ((isLeft === leftNegative) ? OX : RED);
+    $('cell-diagram').innerHTML = `<svg viewBox="0 0 710 440" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs><marker id="arrow-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${activeColor}"/></marker><linearGradient id="metal-left"><stop stop-color="${left.color}"/><stop offset=".5" stop-color="#dbe1e2"/><stop offset="1" stop-color="${left.color}"/></linearGradient><linearGradient id="metal-right"><stop stop-color="${right.color}"/><stop offset=".5" stop-color="#e7ded6"/><stop offset="1" stop-color="${right.color}"/></linearGradient></defs>
+      ${legend}
       <text x="355" y="27" text-anchor="middle" font-size="12" fill="${activeColor}" font-weight="700">${flowText}</text>
       <path d="M 160 159 V 66 H 550 V 159" fill="none" stroke="#8599a2" stroke-width="3"/>
-      ${active ? `<path d="M ${arrowStart} 49 H ${arrowEnd}" stroke="${activeColor}" stroke-width="2" marker-end="url(#arrow-head)"/><path class="electron-dots" d="M 160 159 V 66 H 550 V 159" fill="none" stroke="${activeColor}" stroke-width="7"/>` : ''}
-      <rect x="310" y="48" width="90" height="37" rx="8" fill="#f0f6f5" stroke="#b6c9cb"/><text x="355" y="71" text-anchor="middle" font-size="13" font-weight="700" fill="#31545c">전압계</text>
-      <text x="160" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${active ? (leftNegative ? '#547189' : '#a9623b') : '#607580'}">${leftRole}</text>
-      <text x="550" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${active ? (leftNegative ? '#a9623b' : '#547189') : '#607580'}">${rightRole}</text>
-      <path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#c5d8d1" stroke-width="22" stroke-linecap="round"/><path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#eff7f1" stroke-width="13" stroke-linecap="round"/>
-      <text x="355" y="129" text-anchor="middle" font-size="11" fill="#536d69">염다리 · KNO₃</text><text x="282" y="181" text-anchor="middle" font-size="12" fill="#126b64">${leftIon}</text><text x="429" y="181" text-anchor="middle" font-size="12" fill="#126b64">${rightIon}</text>
+      ${active ? `<path d="M ${leftNegative ? 220 : 490} 49 H ${leftNegative ? 490 : 220}" stroke="${activeColor}" stroke-width="2" marker-end="url(#arrow-head)"/>` : ''}
+      <text x="160" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${roleColor(true)}">${leftRole}</text>
+      <text x="550" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="${roleColor(false)}">${rightRole}</text>
+      <path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#c5d8d1" stroke-width="24" stroke-linecap="round"/><path d="M 244 264 V 166 Q 244 143 271 143 H 439 Q 466 143 466 166 V 264" fill="none" stroke="#eff7f1" stroke-width="15" stroke-linecap="round"/>
+      <text x="355" y="129" text-anchor="middle" font-size="11" fill="#536d69">염다리 · KNO₃(aq)</text>
+      ${active ? `<text x="355" y="182" text-anchor="middle" font-size="11" fill="${KC}" font-weight="700">K⁺ → (+)극 쪽 용액</text><text x="355" y="200" text-anchor="middle" font-size="11" fill="${NC}" font-weight="700">NO₃⁻ → (−)극 쪽 용액</text><text x="355" y="218" text-anchor="middle" font-size="9" fill="#71858e">두 용액의 전하 균형 유지</text>` : `<text x="355" y="190" text-anchor="middle" font-size="11" fill="#8a9ea8">이온의 이동 · 전하 균형</text>`}
       <path d="M 77 216 H 277 V 302 Q 277 325 254 325 H 100 Q 77 325 77 302 Z" fill="${METALS[c.leftSolution].solution}" opacity=".92"/>
       <path d="M 433 216 H 633 V 302 Q 633 325 610 325 H 456 Q 433 325 433 302 Z" fill="${METALS[c.rightSolution].solution}" opacity=".92"/>
       <path d="M 75 195 V 302 Q 75 327 100 327 H 254 Q 279 327 279 302 V 195" fill="none" stroke="#88a2af" stroke-width="2"/><path d="M 431 195 V 302 Q 431 327 456 327 H 610 Q 635 327 635 302 V 195" fill="none" stroke="#88a2af" stroke-width="2"/>
       <path d="M 77 216 H 277 M 433 216 H 633" stroke="#a7bfcb" stroke-width="1"/>
-      ${bubbles(METALS[c.leftSolution], 104)}${bubbles(METALS[c.rightSolution], 460)}
+      ${bubbles(METALS[c.leftSolution], 92)}${bubbles(METALS[c.rightSolution], 448)}
       <rect x="143" y="151" width="34" height="145" rx="3" fill="url(#metal-left)" stroke="#738895"/><rect x="533" y="151" width="34" height="145" rx="3" fill="url(#metal-right)" stroke="#94745e"/>
       <text x="160" y="174" text-anchor="middle" font-size="13" fill="#243a46" font-weight="700">${left.symbol}</text><text x="550" y="174" text-anchor="middle" font-size="13" fill="#243a46" font-weight="700">${right.symbol}</text>
-      ${active ? `<text x="177" y="314" text-anchor="middle" font-size="10" fill="#38505b">${leftNegative ? '금속판의 질량 감소' : '금속 석출 · 금속판의 질량 증가'}</text><text x="533" y="314" text-anchor="middle" font-size="10" fill="#38505b">${leftNegative ? '금속 석출 · 금속판의 질량 증가' : '금속판의 질량 감소'}</text>` : ''}
-      <text x="177" y="352" text-anchor="middle" font-size="13" fill="#304e60">1.0 M ${METALS[c.leftSolution].electrolyte}(aq)</text><text x="533" y="352" text-anchor="middle" font-size="13" fill="#304e60">1.0 M ${METALS[c.rightSolution].electrolyte}(aq)</text>
-      <text x="355" y="375" text-anchor="middle" font-size="9" fill="#71858e">반응과 이동 방향을 나타낸 모식도입니다. 시간에 따른 농도·질량 변화량은 계산하지 않습니다.</text>
+      ${motion}
+      <rect x="310" y="48" width="90" height="37" rx="8" fill="#f0f6f5" stroke="#b6c9cb"/><text x="355" y="71" text-anchor="middle" font-size="13" font-weight="700" fill="#31545c">전압계</text>
+      ${active ? `<text x="177" y="342" text-anchor="middle" font-size="10" font-weight="700" fill="${leftNegative ? OX : RED}">${leftNegative ? `${result.anode.symbol}판이 녹아 질량 감소` : `${result.cathode.symbol} 석출 · 질량 증가`}</text><text x="533" y="342" text-anchor="middle" font-size="10" font-weight="700" fill="${leftNegative ? RED : OX}">${leftNegative ? `${result.cathode.symbol} 석출 · 질량 증가` : `${result.anode.symbol}판이 녹아 질량 감소`}</text>${eqBox(177, leftNegative)}${eqBox(533, !leftNegative)}`
+        : `<text x="177" y="352" text-anchor="middle" font-size="13" fill="#304e60">1.0 M ${METALS[c.leftSolution].electrolyte}(aq)</text><text x="533" y="352" text-anchor="middle" font-size="13" fill="#304e60">1.0 M ${METALS[c.rightSolution].electrolyte}(aq)</text>`}
+      <text x="355" y="432" text-anchor="middle" font-size="9" fill="#71858e">${active ? `각 용액 1.0 M ${METALS[c.leftSolution].electrolyte}(aq) / ${METALS[c.rightSolution].electrolyte}(aq) · ` : ''}반응과 이동 방향을 나타낸 모식도입니다. 시간에 따른 농도·질량 변화량은 계산하지 않습니다.</text>
       </svg>`;
-    $('cell-diagram').setAttribute('aria-label', active ? `${left.symbol}판과 ${right.symbol}판을 연결한 전지. ${result.anode.symbol}판은 산화되는 (−)극, ${result.cathode.symbol}판은 환원되는 (+)극. 전자는 도선을 따라 ${result.electronDirection} 방향으로 이동. 염다리의 음이온은 (−)극 쪽, 양이온은 (+)극 쪽으로 이동.` : `${left.name}판과 ${right.name}판, 두 전해질 수용액, 염다리와 전압계로 이루어진 전지 구성 화면.`);
+    const svg = $('cell-diagram').querySelector('svg');
+    if (active && svg && svg.pauseAnimations) {
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { svg.setCurrentTime(12); svg.pauseAnimations(); }
+      else if (paused) svg.pauseAnimations();
+    }
+    $('cell-diagram').setAttribute('aria-label', active ? `${left.symbol}판과 ${right.symbol}판을 연결한 전지. ${result.anode.symbol}판은 산화되어 ${result.anode.ion}으로 녹아 나오는 (−)극, ${result.cathode.symbol}판은 용액의 ${result.cathode.ion}이 전자를 얻어 ${result.cathode.symbol}로 석출되는 (+)극. 전자는 도선을 따라 ${result.electronDirection} 방향으로 이동. 염다리의 K⁺은 (+)극 쪽, NO₃⁻은 (−)극 쪽으로 이동.` : `${left.name}판과 ${right.name}판, 두 전해질 수용액, 염다리와 전압계로 이루어진 전지 구성 화면.`);
   }
   function invalidate() {
     result = null; paused = false; $('voltage').textContent = '—';
@@ -325,7 +376,8 @@ td.voltage-cell { font-weight:700; font-size:17px; color:var(--teal); font-varia
   $('animation-button').addEventListener('click', () => {
     if (!result) return;
     paused = !paused; $('animation-button').setAttribute('aria-pressed', String(paused));
-    $('animation-button').textContent = paused ? '이동 표시 재생하기' : '이동 표시 멈추기'; diagram();
+    $('animation-button').textContent = paused ? '이동 표시 재생하기' : '이동 표시 멈추기';
+    const svg = $('cell-diagram').querySelector('svg'); if (svg && svg.pauseAnimations) { paused ? svg.pauseAnimations() : svg.unpauseAnimations(); } else diagram();
   });
   function renderRecords() {
     records.sort((a,b) => PAIRS.findIndex(p => p.join('–') === a.key) - PAIRS.findIndex(p => p.join('–') === b.key));
